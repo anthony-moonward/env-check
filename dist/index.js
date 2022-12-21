@@ -53,16 +53,19 @@ function run() {
         const parsedGitignore = (0, parse_gitignore_1.default)(gitignoreFile.toString());
         const patterns = parsedGitignore.patterns;
         const gitignoreHasEnv = patterns.includes('.env');
-        core.summary.addHeading('Env Check').addTable([
+        const exampleFileExists = fs_1.default.existsSync(path_1.default.join(workingDir, '.env.example'));
+        if (!exampleFileExists) {
+        }
+        yield core.summary
+            .addHeading('Env Check')
+            .addTable([
             [
                 { header: true, data: 'first' },
                 { header: true, data: 'second' }
             ],
             [{ data: 'first' }, { data: 'second' }]
-        ]);
-        const exampleFileExists = fs_1.default.existsSync(path_1.default.join(workingDir, '.env.example'));
-        if (!exampleFileExists) {
-        }
+        ])
+            .write();
     });
 }
 run();

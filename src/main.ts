@@ -19,17 +19,20 @@ async function run(): Promise<void> {
 
   const gitignoreHasEnv = patterns.includes('.env')
 
-  core.summary.addHeading('Env Check').addTable([
-    [
-      {header: true, data: 'first'},
-      {header: true, data: 'second'}
-    ],
-    [{data: 'first'}, {data: 'second'}]
-  ])
-
   const exampleFileExists = fs.existsSync(path.join(workingDir, '.env.example'))
   if (!exampleFileExists) {
   }
+
+  await core.summary
+    .addHeading('Env Check')
+    .addTable([
+      [
+        {header: true, data: 'first'},
+        {header: true, data: 'second'}
+      ],
+      [{data: 'first'}, {data: 'second'}]
+    ])
+    .write()
 }
 
 run()
