@@ -27,10 +27,12 @@ async function run(): Promise<void> {
     .addHeading('Env Check')
     .addTable([
       [
-        {header: true, data: 'first'},
-        {header: true, data: 'second'}
+        {header: true, data: 'Check'},
+        {header: true, data: 'Passed'}
       ],
-      [{data: 'first'}, {data: 'second'}]
+      [{data: 'No .env in project'}, {data: `${!envFileExists}`}],
+      [{data: '.gitignore contains .env'}, {data: `${gitignoreHasEnv}`}],
+      [{data: '.env.example exists'}, {data: `${exampleFileExists}`}]
     ])
     .write()
 }
