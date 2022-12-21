@@ -1,18 +1,34 @@
 import * as core from '@actions/core'
-import {wait} from './wait'
+import fs from 'fs'
+import path from 'path'
+import parse from 'parse-gitignore'
 
 async function run(): Promise<void> {
-  try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`) // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
+  const workingDir = process.cwd()
 
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+  const envFileExists = fs.existsSync(path.join(workingDir, '.env'))
+  if (envFileExists) {
+  }
 
-    core.setOutput('time', new Date().toTimeString())
-  } catch (error) {
-    if (error instanceof Error) core.setFailed(error.message)
+  const gitignorePath = path.join(workingDir, '.gitignore')
+
+  const gitignoreFile = fs.readFileSync(gitignorePath)
+
+  const parsedGitignore = parse(gitignoreFile.toString())
+  const patterns = (parsedGitignore as unknown as {patterns: string[]}).patterns
+
+  const gitignoreHasEnv = patterns.includes('.env')
+
+  core.summary.addHeading('Env Check').addTable([
+    [
+      {header: true, data: 'first'},
+      {header: true, data: 'second'}
+    ],
+    [{data: 'first'}, {data: 'second'}]
+  ])
+
+  const exampleFileExists = fs.existsSync(path.join(workingDir, '.env.example'))
+  if (!exampleFileExists) {
   }
 }
 
