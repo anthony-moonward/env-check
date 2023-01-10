@@ -45,16 +45,15 @@ const parse_gitignore_1 = __importDefault(__nccwpck_require__(989));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         const workingDir = process.cwd();
-        const envFileExists = fs_1.default.existsSync(path_1.default.join(workingDir, '.env'));
-        if (envFileExists) {
-        }
+        const noEnvFileExists = !fs_1.default.existsSync(path_1.default.join(workingDir, '.env'));
         const gitignorePath = path_1.default.join(workingDir, '.gitignore');
         const gitignoreFile = fs_1.default.readFileSync(gitignorePath);
         const parsedGitignore = (0, parse_gitignore_1.default)(gitignoreFile.toString());
         const patterns = parsedGitignore.patterns;
         const gitignoreHasEnv = patterns.includes('.env');
         const exampleFileExists = fs_1.default.existsSync(path_1.default.join(workingDir, '.env.example'));
-        if (!exampleFileExists) {
+        if (noEnvFileExists || !gitignoreHasEnv || !exampleFileExists) {
+            core.setFailed('Invalid .env configuration');
         }
         yield core.summary
             .addHeading('Env Check')
@@ -63,9 +62,18 @@ function run() {
                 { header: true, data: 'Check' },
                 { header: true, data: 'Passed' }
             ],
-            [{ data: 'No .env in project' }, { data: `${!envFileExists}` }],
-            [{ data: '.gitignore contains .env' }, { data: `${gitignoreHasEnv}` }],
-            [{ data: '.env.example exists' }, { data: `${exampleFileExists}` }]
+            [
+                { data: 'No .env in project' },
+                { data: `${noEnvFileExists ? ':white_check_mark: Pass' : ':x: Fail'}` }
+            ],
+            [
+                { data: '.gitignore contains .env' },
+                { data: `${gitignoreHasEnv ? ':white_check_mark:' : ':x: Fail'}` }
+            ],
+            [
+                { data: '.env.example exists' },
+                { data: `${exampleFileExists ? ':white_check_mark:' : ':x: Fail'}` }
+            ]
         ])
             .write();
     });
