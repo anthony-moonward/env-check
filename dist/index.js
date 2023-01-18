@@ -45,14 +45,14 @@ const parse_gitignore_1 = __importDefault(__nccwpck_require__(989));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         const workingDir = process.cwd();
-        const noEnvFileExists = !fs_1.default.existsSync(path_1.default.join(workingDir, '.env'));
+        const envFileExists = fs_1.default.existsSync(path_1.default.join(workingDir, '.env'));
         const gitignorePath = path_1.default.join(workingDir, '.gitignore');
         const gitignoreFile = fs_1.default.readFileSync(gitignorePath);
         const parsedGitignore = (0, parse_gitignore_1.default)(gitignoreFile.toString());
         const patterns = parsedGitignore.patterns;
         const gitignoreHasEnv = patterns.includes('.env');
         const exampleFileExists = fs_1.default.existsSync(path_1.default.join(workingDir, '.env.example'));
-        if (noEnvFileExists || !gitignoreHasEnv || !exampleFileExists) {
+        if (envFileExists || !gitignoreHasEnv || !exampleFileExists) {
             core.setFailed('Invalid .env configuration');
         }
         yield core.summary
@@ -64,15 +64,15 @@ function run() {
             ],
             [
                 { data: 'No .env in project' },
-                { data: `${noEnvFileExists ? ':white_check_mark: Pass' : ':x: Fail'}` }
+                { data: `${envFileExists ? ':x: Fail' : ':white_check_mark: Pass'}` }
             ],
             [
                 { data: '.gitignore contains .env' },
-                { data: `${gitignoreHasEnv ? ':white_check_mark:' : ':x: Fail'}` }
+                { data: `${gitignoreHasEnv ? ':white_check_mark: Pass' : ':x: Fail'}` }
             ],
             [
                 { data: '.env.example exists' },
-                { data: `${exampleFileExists ? ':white_check_mark:' : ':x: Fail'}` }
+                { data: `${exampleFileExists ? ':white_check_mark: Pass' : ':x: Fail'}` }
             ]
         ])
             .write();
