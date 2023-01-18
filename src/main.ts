@@ -6,7 +6,7 @@ import parse from 'parse-gitignore'
 async function run(): Promise<void> {
   const workingDir = process.cwd()
 
-  const noEnvFileExists = !fs.existsSync(path.join(workingDir, '.env'))
+  const envFileExists = fs.existsSync(path.join(workingDir, '.env'))
 
   const gitignorePath = path.join(workingDir, '.gitignore')
 
@@ -18,7 +18,7 @@ async function run(): Promise<void> {
   const gitignoreHasEnv = patterns.includes('.env')
 
   const exampleFileExists = fs.existsSync(path.join(workingDir, '.env.example'))
-  if (noEnvFileExists || !gitignoreHasEnv || !exampleFileExists) {
+  if (envFileExists || !gitignoreHasEnv || !exampleFileExists) {
     core.setFailed('Invalid .env configuration')
   }
 
@@ -31,15 +31,15 @@ async function run(): Promise<void> {
       ],
       [
         {data: 'No .env in project'},
-        {data: `${noEnvFileExists ? ':white_check_mark: Pass' : ':x: Fail'}`}
+        {data: `${envFileExists ? ':x: Fail' : ':white_check_mark: Pass'}`}
       ],
       [
         {data: '.gitignore contains .env'},
-        {data: `${gitignoreHasEnv ? ':white_check_mark:' : ':x: Fail'}`}
+        {data: `${gitignoreHasEnv ? ':white_check_mark: Pass' : ':x: Fail'}`}
       ],
       [
         {data: '.env.example exists'},
-        {data: `${exampleFileExists ? ':white_check_mark:' : ':x: Fail'}`}
+        {data: `${exampleFileExists ? ':white_check_mark: Pass' : ':x: Fail'}`}
       ]
     ])
     .write()
